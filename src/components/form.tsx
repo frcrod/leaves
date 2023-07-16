@@ -149,7 +149,7 @@ export default function Form({ className = "" }: FormPropTypes) {
         type="submit"
         placeholder="Submit"
         value={"Submit"}
-        className="btn"
+        className="btn-primary btn"
       />
     </form>
   );
