@@ -10,7 +10,13 @@ The Leave Form Generator is a JavaScript-based application that allows users to 
 npm install
 ```
 
-2. Run as development
+2. Install Dependencies
+
+```bash
+npx prisma db push
+```
+
+3. Run as development
 
 ```bash
 npm run dev
