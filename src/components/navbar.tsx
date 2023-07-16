@@ -1,6 +1,7 @@
 import TropicalLeavesIcon from "../../public/tropical-leaves.webp";
 import Image from "next/image";
 import classNames from "classnames";
+import Link from "next/link";
 
 interface NavbarPropTypes {
   className?: string;
@@ -10,7 +11,7 @@ export default function Navbar({ className = "" }: NavbarPropTypes) {
   return (
     <div className={classNames("navbar bg-base-100", className)}>
       <div className="flex-1">
-        <a className="btn-ghost btn text-2xl normal-case">
+        <Link href={"/"} className="btn-ghost btn text-2xl normal-case">
           <Image
             src={TropicalLeavesIcon}
             alt="Leaves icon"
@@ -18,12 +19,12 @@ export default function Navbar({ className = "" }: NavbarPropTypes) {
             height={28}
           />
           Leaves
-        </a>
+        </Link>
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <a>Dashboard</a>
+            <Link href={"/"}>Dashboard</Link>
           </li>
         </ul>
       </div>

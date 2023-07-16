@@ -6,6 +6,7 @@ import BusinessTime from "dayjs-business-time";
 import { type LeaveForm, type PrismaClient } from "@prisma/client";
 
 const currentDate = new Date();
+currentDate.setDate(0);
 dayjs.extend(BusinessTime);
 dayjs.extend(isBetween);
 
@@ -15,7 +16,6 @@ const fetchLeavesWithinDateRange = async (
   prisma: PrismaClient
 ): Promise<LeaveForm[]> => {
   const leaves = await prisma?.leaveForm?.findMany({});
-
   const filteredLeaves = leaves?.filter((leave: LeaveForm) => {
     const start = dayjs(leave.startDate);
     const end = dayjs(leave.endDate);
@@ -65,7 +65,11 @@ export const leaveFormsRouter = createTRPCRouter({
     .input(
       z.object({
         startDate: z.date().default(new Date(currentDate.getFullYear(), 0)),
-        endDate: z.date().default(currentDate),
+        endDate: z
+          .date()
+          .default(
+            new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0)
+          ),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -81,8 +85,12 @@ export const leaveFormsRouter = createTRPCRouter({
   generateProRated: publicProcedure
     .input(
       z.object({
-        startDate: z.date().default(new Date(currentDate.getFullYear(), 0)),
-        endDate: z.date().default(currentDate),
+        startDate: z.date().default(new Date(currentDate.getFullYear(), 0, 1)),
+        endDate: z
+          .date()
+          .default(
+            new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0)
+          ),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -100,44 +108,27 @@ export const leaveFormsRouter = createTRPCRouter({
         const start = dayjs(curr.startDate);
         const end = dayjs(curr.endDate);
 
+        const cost = isWholeDay ? 1 : 0.5;
         if (curr.endDate === null) {
-          acc += isWholeDay ? 1 : 0.5;
+          acc += cost;
         } else if (
-          start.isBetween(startDateRange, endDateRange, "month") &&
-          !end.isBetween(startDateRange, endDateRange, "month")
+          start.isBetween(startDateRange, endDateRange, "month", "[]") &&
+          !end.isBetween(startDateRange, endDateRange, "month", "[]")
         ) {
-          console.log(
-            Math.abs(
-              Math.min(
-                start.businessDaysDiff(startDateRange),
-                start.businessDaysDiff(endDateRange)
-              )
-            )
-          );
-          acc += Math.abs(
+          acc +=
             Math.min(
-              start.businessDaysDiff(startDateRange),
-              start.businessDaysDiff(endDateRange)
-            )
-          );
+              Math.abs(start.businessDaysDiff(startDateRange)),
+              Math.abs(start.businessDaysDiff(endDateRange))
+            ) * cost;
         } else if (
-          !start.isBetween(startDateRange, endDateRange, "month") &&
-          end.isBetween(startDateRange, endDateRange, "month")
+          !start.isBetween(startDateRange, endDateRange, "month", "[]") &&
+          end.isBetween(startDateRange, endDateRange, "month", "[]")
         ) {
-          console.log(
-            Math.abs(
-              Math.min(
-                end.businessDaysDiff(startDateRange),
-                end.businessDaysDiff(endDateRange)
-              )
-            )
-          );
-          acc += Math.abs(
+          acc +=
             Math.min(
-              end.businessDaysDiff(startDateRange),
-              end.businessDaysDiff(endDateRange)
-            )
-          );
+              Math.abs(end.businessDaysDiff(startDateRange)),
+              Math.abs(end.businessDaysDiff(endDateRange))
+            ) * cost;
         } else {
           const businessDiff = Math.abs(start.businessDaysDiff(end));
           acc += isWholeDay ? businessDiff : businessDiff / 2;

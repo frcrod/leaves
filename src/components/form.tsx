@@ -5,6 +5,8 @@ import classNames from "classnames";
 import { type DateValueType } from "react-tailwindcss-datepicker/dist/types";
 import { api } from "~/utils/api";
 import dayjs from "dayjs";
+import BusinessTime from "dayjs-business-time";
+import Stat from "./stat";
 
 type Inputs = {
   reason: string;
@@ -16,6 +18,7 @@ interface FormPropTypes {
 }
 
 const currentDate = new Date();
+dayjs.extend(BusinessTime);
 
 export default function Form({ className = "" }: FormPropTypes) {
   const utils = api.useContext();
@@ -30,14 +33,19 @@ export default function Form({ className = "" }: FormPropTypes) {
     endDate: null,
   });
 
+  const [cost, setCost] = useState<number>(0);
+
   const [isDateValid, setIsDateValid] = useState<boolean>(true);
 
   const handleValueChange = (newValue: DateValueType) => {
     const start = dayjs(newValue?.startDate);
+    const end = dayjs(newValue?.endDate);
 
     if (start.isBefore(new Date(), "day")) {
       return setIsDateValid(false);
     }
+
+    setCost(Math.abs(start.businessDaysDiff(end)));
 
     setIsDateValid(true);
     setDateRange(newValue);
@@ -68,29 +76,36 @@ export default function Form({ className = "" }: FormPropTypes) {
       onSubmit={handleSubmit(onSubmit)}
     >
       <h1 className="text-2xl font-bold">Leave Form</h1>
-      <div
-        className={classNames("form-control w-full max-w-xs", {
-          "text-red-500": !isDateValid,
-        })}
-      >
-        <label className="label">
-          <span className="label-text text-lg">Enter Date</span>
-        </label>
-        <Datepicker
-          minDate={currentDate}
-          value={dateRange}
-          onChange={handleValueChange}
-        />
-        {!isDateValid ? (
-          <label className="label w-full">
-            <span className="label-text-alt">
-              Please ensure that the start date is either today or a future
-              date.
-            </span>
+      <div className="flex gap-2">
+        <div
+          className={classNames("form-control w-full max-w-xs", {
+            "text-red-500": !isDateValid,
+          })}
+        >
+          <label className="label">
+            <span className="label-text text-lg">Enter Date</span>
           </label>
-        ) : (
-          ""
-        )}
+          <Datepicker
+            minDate={currentDate}
+            value={dateRange}
+            onChange={handleValueChange}
+            separator="to"
+          />
+          {!isDateValid ? (
+            <label className="label w-full">
+              <span className="label-text-alt">
+                Please ensure that the start date is either today or a future
+                date.
+              </span>
+            </label>
+          ) : (
+            ""
+          )}
+        </div>
+        <div className="join gap-2">
+          <Stat title="Cost (Whole Day)" value={cost} />
+          <Stat title="Cost (Half Day)" value={cost / 2} />
+        </div>
       </div>
       <div>
         <label className="label my-0">
