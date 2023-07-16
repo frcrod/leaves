@@ -25,6 +25,7 @@ export default function Form({ className = "" }: FormPropTypes) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -34,6 +35,7 @@ export default function Form({ className = "" }: FormPropTypes) {
   });
 
   const [cost, setCost] = useState<number>(0);
+  const leaveType = watch("type");
 
   const [isDateValid, setIsDateValid] = useState<boolean>(true);
 
@@ -69,13 +71,16 @@ export default function Form({ className = "" }: FormPropTypes) {
   return (
     <form
       className={classNames(
-        "m-4 mx-auto flex flex-col gap-3 rounded-md border p-5 shadow",
+        "m-4 mx-auto flex flex-col gap-1 rounded-md border p-5 shadow",
         className
       )}
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSubmit={handleSubmit(onSubmit)}
     >
-      <h1 className="text-2xl font-bold">Leave Form</h1>
+      <div>
+        <h1 className="text-4xl font-bold">Leave Form</h1>
+        <div className="divider my-0"></div>
+      </div>
       <div className="flex gap-2">
         <div
           className={classNames("form-control w-full max-w-xs", {
@@ -86,6 +91,7 @@ export default function Form({ className = "" }: FormPropTypes) {
             <span className="label-text text-lg">Enter Date</span>
           </label>
           <Datepicker
+            primaryColor={"green"}
             minDate={currentDate}
             value={dateRange}
             onChange={handleValueChange}
@@ -102,10 +108,10 @@ export default function Form({ className = "" }: FormPropTypes) {
             ""
           )}
         </div>
-        <div className="join gap-2">
-          <Stat title="Cost (Whole Day)" value={cost} />
-          <Stat title="Cost (Half Day)" value={cost / 2} />
-        </div>
+        <Stat
+          title={`Cost (${leaveType === "whole" ? "Whole Day" : "Half Day"})`}
+          value={leaveType === "whole" ? cost : cost / 2}
+        />
       </div>
       <div>
         <label className="label my-0">

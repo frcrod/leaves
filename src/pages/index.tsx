@@ -35,7 +35,7 @@ export default function Home() {
         <div className="mx-auto mt-8 flex w-9/12 flex-col justify-center gap-3">
           <div className="flex gap-3">
             <Stat
-              title="Leave Balance"
+              title="Total Pro-rated Leave"
               value={proRatedData?.proRatedInDateRange}
               sub="January - "
             />
