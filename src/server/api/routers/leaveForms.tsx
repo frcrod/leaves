@@ -141,6 +141,11 @@ export const leaveFormsRouter = createTRPCRouter({
         Math.abs(startDateRange.diff(endDateRange, "M")) + 1;
       const proRatedInDateRange = rangeMonthDiff * 2;
 
-      return { accumulated, proRatedInDateRange };
+      return {
+        accumulated,
+        proRatedInDateRange,
+        startMonth: startDateRange.format("MMMM"),
+        endMonth: endDateRange.format("MMMM"),
+      };
     }),
 });

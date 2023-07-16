@@ -37,19 +37,17 @@ export default function Home() {
             <Stat
               title="Total Pro-rated Leave"
               value={proRatedData?.proRatedInDateRange}
-              sub="January - "
+              sub={`${proRatedData?.startMonth} - ${proRatedData?.endMonth}`}
             />
             <Stat
               title="Pro-rated (Used)"
               value={proRatedData?.accumulated}
-              sub="January - "
+              sub={`${proRatedData?.startMonth} - ${proRatedData?.endMonth}`}
             />
             <Stat
               title="Leave Balance"
-              value={
-                proRatedData?.proRatedInDateRange - proRatedData?.accumulated
-              }
-              sub="January - "
+              value={24 - proRatedData?.accumulated}
+              sub={`Whole Year`}
             />
           </div>
           <Form className="w-full" />

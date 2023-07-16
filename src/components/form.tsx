@@ -111,6 +111,7 @@ export default function Form({ className = "" }: FormPropTypes) {
         <Stat
           title={`Cost (${leaveType === "whole" ? "Whole Day" : "Half Day"})`}
           value={leaveType === "whole" ? cost : cost / 2}
+          sub="Possible cost"
         />
       </div>
       <div>
