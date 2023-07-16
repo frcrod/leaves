@@ -21,7 +21,8 @@ const fetchLeavesWithinDateRange = async (
     const end = dayjs(leave.endDate);
 
     return (
-      start.isBetween(startDate, endDate) || end.isBetween(startDate, endDate)
+      start.isBetween(startDate, endDate, "month", "[]") ||
+      end.isBetween(startDate, endDate, "month", "[]")
     );
   });
 
@@ -102,9 +103,17 @@ export const leaveFormsRouter = createTRPCRouter({
         if (curr.endDate === null) {
           acc += isWholeDay ? 1 : 0.5;
         } else if (
-          start.isBetween(startDateRange, endDateRange) &&
-          !end.isBetween(startDateRange, endDateRange)
+          start.isBetween(startDateRange, endDateRange, "month") &&
+          !end.isBetween(startDateRange, endDateRange, "month")
         ) {
+          console.log(
+            Math.abs(
+              Math.min(
+                start.businessDaysDiff(startDateRange),
+                start.businessDaysDiff(endDateRange)
+              )
+            )
+          );
           acc += Math.abs(
             Math.min(
               start.businessDaysDiff(startDateRange),
@@ -112,9 +121,17 @@ export const leaveFormsRouter = createTRPCRouter({
             )
           );
         } else if (
-          !start.isBetween(startDateRange, endDateRange) &&
-          end.isBetween(startDateRange, endDateRange)
+          !start.isBetween(startDateRange, endDateRange, "month") &&
+          end.isBetween(startDateRange, endDateRange, "month")
         ) {
+          console.log(
+            Math.abs(
+              Math.min(
+                end.businessDaysDiff(startDateRange),
+                end.businessDaysDiff(endDateRange)
+              )
+            )
+          );
           acc += Math.abs(
             Math.min(
               end.businessDaysDiff(startDateRange),
