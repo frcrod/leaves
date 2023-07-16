@@ -9,7 +9,7 @@ type Inputs = {
   type: string;
 };
 
-export default function Form() {
+export default function Form({ refetch }) {
   const utils = api.useContext();
   const {
     register,
@@ -21,8 +21,6 @@ export default function Form() {
     startDate: null,
     endDate: null,
   });
-
-  const refreshData = () => utils.leaveForms.findWithinTargetDate.invalidate();
 
   const handleValueChange = (newValue: DateValueType) => {
     setDateRange(newValue);
@@ -37,13 +35,10 @@ export default function Form() {
       reason: data.reason,
       type: data.type,
       startDate: new Date(dateRange?.startDate),
-      endDate:
-        dateRange?.startDate == dateRange?.endDate
-          ? null
-          : new Date(dateRange?.endDate),
+      endDate: new Date(dateRange?.endDate),
     });
 
-    refreshData().catch(() => console.log("ERROR"));
+    refetch();
   };
 
   return (

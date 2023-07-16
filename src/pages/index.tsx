@@ -1,10 +1,13 @@
 import Head from "next/head";
-import Link from "next/link";
 import { api } from "~/utils/api";
 import Form from "~/components/form";
 
 export default function Home() {
-  const { data } = api.leaveForms.findWithinTargetDate.useQuery();
+  const { data, refetch } = api.leaveForms.findWithinTargetDate.useQuery({});
+  const { data: proRatedData, refetch: proRatedRefetch } =
+    api.leaveForms.generateProRated.useQuery({});
+
+  console.table(data);
 
   return (
     <>
@@ -14,8 +17,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Form />
+        <Form refetch={refetch} />
         {JSON.stringify(data)}
+        {JSON.stringify(proRatedData)}
       </main>
     </>
   );
